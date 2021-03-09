@@ -15,7 +15,7 @@ end
 class Tree
   def initialize(array)
     @array = array.sort.uniq
-    @root = build_tree(array)
+    @root = build_tree(@array)
   end
 
   def build_tree(array)
@@ -25,18 +25,34 @@ class Tree
     Node.new(array[middle], build_tree(array[0...middle]), build_tree(array[middle + 1..array.length]))
   end
 
-  def print_tree
-    root = @root
-    while root
-      puts "#{root.data} left is #{root.left.data} right is #{root.right.data}"
-      root = root.right
+  def insert(value, node = @root)
+    if node.data >= value
+      return node.left = Node.new(value, nil, nil) if node.left.nil?
+
+      node = node.left
+      insert(value, node)
+    elsif node.data < value
+      return node.right = Node.new(value, nil, nil) if node.right.nil?
+
+      node = node.right
+      insert(value, node)
     end
+  end
+
+  def test
+    puts @root.data
+  end
+
+  def pretty_print(node = @root, prefix = '', is_left = true)
+    pretty_print(node.right, "#{prefix}#{is_left ? '│   ' : '    '}", false) if node.right
+    puts "#{prefix}#{is_left ? '└── ' : '┌── '}#{node.data}"
+    pretty_print(node.left, "#{prefix}#{is_left ? '    ' : '│   '}", true) if node.left
   end
 end
 
 array = [1, 2, 9, 3, 4, 5, 6, 7, 8, 9]
 tree = Tree.new(array)
-p tree
+tree.pretty_print
 
 # array[array[0...middle].length / 2]
 # array[middle + 1..array.length].length / 2
