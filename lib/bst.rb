@@ -39,8 +39,41 @@ class Tree
     end
   end
 
-  def test
-    puts @root.data
+  def delete(value, node = @root)
+    # deletes specified value from the tree
+    return nil if node.nil?
+
+    node = find_value(value, node)
+    if node.left.nil?
+      node.data = node.right.data
+      node.right = nil
+    elsif node.right.nil?
+      node.data = node.left.data
+      node.left = nil
+    else
+      node.data = inorder_successor(node).data
+      delete(inorder_successor(node).data, node.right)
+    end
+  end
+
+  def find_value(value, node = @root)
+    # finds a value in the tree
+    return nil if node.nil?
+
+    if value < node.data && node.left != value
+      find_value(value, node.left)
+    elsif value > node.data && node.right != value
+      find_value(value, node.right)
+    else
+      node
+    end
+  end
+
+  def inorder_successor(node = @root)
+    # returns node of inorder successor
+    node = node.right
+    node = node.left until node.left.nil?
+    node
   end
 
   def pretty_print(node = @root, prefix = '', is_left = true)
@@ -50,9 +83,12 @@ class Tree
   end
 end
 
-array = [1, 2, 9, 3, 4, 5, 6, 7, 8, 9]
+array = [1, 2, 9, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
 tree = Tree.new(array)
 tree.pretty_print
+tree.delete(13)
+tree.pretty_print
+
 
 # array[array[0...middle].length / 2]
 # array[middle + 1..array.length].length / 2
